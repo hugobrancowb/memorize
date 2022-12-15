@@ -8,15 +8,58 @@
 import SwiftUI
 
 struct ContentView: View {
+  let emojis = [ "👨‍💻", "🍎", "🎨", "🍉", "😀", "😃", "😆", "😅", "🤣", "😂", "🙂", "🙃", "🫠", "😉", "😊", "💖" ]
+  let emojiHCount = 16
+  
   var body: some View {
-    let frame = RoundedRectangle(cornerRadius: 24.0)
-      .stroke(style: StrokeStyle(lineWidth: 2))
+    VStack{
+      ScrollView {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))]) {
+          ForEach(emojis[0..<emojiHCount], id: \.self) { emoji in
+            CardView(text: emoji).aspectRatio(2/3, contentMode: .fit)
+          }
+        }
+      }
+    }.padding()
+  }
+}
+
+struct CardView: View {
+  /// Card color.
+  var color: Color = .purple
+  
+  /// Card text, or emoji, shown inside.
+  var text: String = ""
+  
+  /// If true, card will be shoing its `text`
+  @State var isFaceUp: Bool = true
+  
+  var body: some View {
+    let text = Text(text).font(.largeTitle)
+    let shape = RoundedRectangle(cornerRadius: 16.0)
     
-    let text = Text("😉")
-    
-    ZStack { frame; text }
-    .foregroundColor(.purple)
-    .padding()
+    ZStack {
+      if isFaceUp {
+        // first view returned
+        shape
+          .fill()
+          .foregroundColor(.white)
+        
+        // second view returned
+        shape
+          .strokeBorder(style: StrokeStyle(lineWidth: 2))
+          .foregroundColor(color)
+        
+        // third view returned
+        text
+      } else {
+        // only view returned
+        shape.fill().foregroundColor(color)
+      }
+    }
+    .onTapGesture {
+      isFaceUp = !isFaceUp
+    }
   }
 }
 
